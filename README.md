@@ -1,2 +1,2 @@
 # HelloWorld.Rmd
-## THanks Anna
+## Hello Data class!!
