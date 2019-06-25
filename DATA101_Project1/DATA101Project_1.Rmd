@@ -1,0 +1,114 @@
+---
+title: "Avocado Prices Project"
+author: "D.O. A.S."
+date: "Fall 2018"
+output:
+  html_document:
+    toc: yes
+    toc_depth: '2'
+  pdf_document:
+    keep_tex: yes
+    toc: yes
+    toc_depth: 2
+geometry: right=2.5in
+---
+
+
+```{r cache=FALSE, echo=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5.5, fig.width=6, collapse=TRUE, comment="", prompt=TRUE)
+options(width=63)
+
+library(dplyr)
+```
+
+dplyr reference: https://dplyr.tidyverse.org/reference/index.html
+
+#Read Data
+
+Some relevant columns in the dataset: (copied from https://www.kaggle.com/neuromusic/avocado-prices/home)
+
+ * Date - The date of the observation
+ * AveragePrice - the average price of a single avocado
+ * type - conventional or organic
+ * year - the year
+ * Region - the city or region of the observation
+ * Total Volume - Total number of avocados sold
+ * 4046 - Total number of avocados with PLU 4046 sold (small Hass)
+ * 4225 - Total number of avocados with PLU 4225 sold (large Hass)
+ * 4770 - Total number of avocados with PLU 4770 sold (extra large Hass)
+
+```{r}
+avocado <- read.csv('avocado.csv', header = TRUE)
+avo <- avocado[, c('Date', 'AveragePrice', 'Total.Volume', 'type', 'year', 'region')]
+dim(avo)
+head(avo)
+str(avo)
+```
+
+#Select Data
+##Max and Min
+What is the highest average price? The smallest?
+```{r}
+max_ave <- max(avo$AveragePrice)
+max_ave
+min_ave <- min(avo$AveragePrice)
+min_ave
+```
+
+
+##Average Price
+What about average average price? This is over all time and all places and all types of avocado.
+```{r}
+mean_price <- mean(avo$AveragePrice)
+mean_price
+```
+
+##Sorted By Region
+What kind of regions are there? Let's get the number of different regions, and have them printed out.
+```{r}
+regions <- select(avo, region) %>% unique %>% nrow
+regions
+```
+
+# Filter
+Make a new column 'rate' that gives price per volume.
+
+Then filter by some arbitrary standards.
+
+```{r}
+vol <- avo$Total.Volume
+avo <- mutate(avo, rate = avo$AveragePrice/vol*100000)
+avop_f <- filter(avo, AveragePrice >= 1.41)
+avor_f <- filter(avo,rate >= 1.5)
+by_avo <- group_by(avo, region)
+head(avop_f)
+head(avor_f)
+head(by_avo)
+```
+
+#Group By
+What is the difference between average price for conventional and organic avocados? We use group by to find out.
+```{r}
+types <- group_by(avo, type)
+summarize(types, "Price" = mean(AveragePrice))
+```
+
+#Summarize
+Here are some means and medians, as well as the five-number summary for average price. We use summarize() to rename columns for output.
+
+```{r}
+summarize(avo, "Average Average Price" = mean(AveragePrice), "Median Average Price"  = median(AveragePrice), "Average Total Volume" = mean(Total.Volume), "Median Total Volume" = median(Total.Volume), "Average Rate" = mean(rate), "Median Rate" = median(rate))
+
+summary(avo$AveragePrice)
+  
+```
+
+#Graphs (filtered by region)
+We are going to create plots per region of price vs time.
+```{r}
+for (i in unique(avo$region)) {
+  tmp <- filter(avo, region == i)
+  plot(tmp$Date, tmp$AveragePrice, type = "b", main = i, xlab = "Date", ylab = "Average Price", ylim = c(0, 3.5))
+}
+```
