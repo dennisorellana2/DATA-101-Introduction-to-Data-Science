@@ -1,0 +1,203 @@
+---
+title: "Exam Performance"
+author: "A.S., D.O."
+date: "December 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+http://roycekimmons.com/tools/generated_data/exams
+This dataset found on kaggle was pulled from this website. It is theoretically "exam scores for students at a public school". However, there is an interesting disclaimer at the end that says "All data sets are fictional and should be used for educational purposes only." That is a :thinking:
+
+
+## Package Load
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+```
+
+## Load Data
+
+```{r}
+full <- read.csv("StudentsPerformance.csv", header = TRUE)
+dim(full)
+head(full)
+str(full)
+```
+
+So it doesn't seem like this dataset is too big. It's a smaller sample, relatively speaking. 1000 isn't a copious amount.
+
+We've got 5 indicators about people, their gender, their race (as described in a group, we don't know which correlate to which), their parents' level of education, their lunch situation (probably pointing to their financial situation), and whether they did a test prep course.
+
+To analyze, we have their writing, reading, and math scores.
+
+Null Hypothesis: There is no correction between total average exams and these co-variates.
+
+Alternative Hypothesis: At least one co-variable Correlates with total average exams.
+
+## Select Data
+```{r}
+math_score <- full$math.score
+ave_math <- mean(math_score)
+reading_score <- full$reading.score
+ave_reading <- mean(reading_score)
+writing_score <- full$writing.score
+ave_writing <- mean(writing_score)
+
+levels(full$gender)
+levels(full$race.ethnicity)
+levels(full$parental.level.of.education)
+levels(full$lunch)
+levels(full$test.preparation.course)
+
+all_exams <- ((math_score+reading_score+writing_score)/3)
+
+full2 <- mutate(full,mean_exams = all_exams)
+head(full2)
+```
+
+##Highest Scores and Lowest scores
+```{r}
+
+#Math
+i_mathmin <- which.min(math_score)
+full$lunch[i_mathmin]
+full$parental.level.of.education[i_mathmin]
+full$test.preparation.course[i_mathmin]
+full$gender[i_mathmin]
+
+i_mathmax <- which.max(math_score)
+full$lunch[i_mathmax]
+full$parental.level.of.education[i_mathmax]
+full$test.preparation.course[i_mathmax]
+full$gender[i_mathmax]
+
+#Reading
+i_readmin <- which.min(reading_score)
+full$lunch[i_readmin]
+full$parental.level.of.education[i_readmin]
+full$test.preparation.course[i_readmin]
+full$gender[i_readmin]
+
+i_readmax <- which.max(reading_score)
+full$lunch[i_readmax]
+full$parental.level.of.education[i_readmax]
+full$test.preparation.course[i_readmax]
+full$gender[i_readmax]
+
+#Writing
+i_writemin <- which.min(writing_score)
+full$lunch[i_writemin]
+full$parental.level.of.education[i_writemin]
+full$test.preparation.course[i_writemin]
+full$gender[i_writemin]
+
+i_writemax <- which.max(writing_score)
+full$lunch[i_writemax]
+full$parental.level.of.education[i_writemax]
+full$test.preparation.course[i_writemax]
+full$gender[i_writemax]
+
+#Average for all exams
+i_examsmin <- which.min(all_exams)
+full2$lunch[i_examsmin]
+full2$parental.level.of.education[i_examsmin]
+full2$test.preparation.course[i_examsmin]
+full2$gender[i_examsmin]
+
+i_examsmax <- which.max(all_exams)
+full2$lunch[i_examsmax]
+full2$parental.level.of.education[i_examsmax]
+full2$test.preparation.course[i_examsmax]
+full2$gender[i_examsmax]
+
+```
+
+## Graph
+```{r}
+table(full$gender) %>% barplot(col = "red")
+
+hist(math_score, col = "green")
+
+hist(reading_score, col = "orange")
+
+hist(writing_score, col = "blue")
+
+hist(all_exams, col = "purple")
+```
+All the histograms are left skewed.
+
+# Comparing student's lunch situation with their math scores 
+```{r}
+ggplot(data = full) + 
+  geom_boxplot(mapping = aes(x = factor(lunch), y = math_score, 
+                             fill = factor(lunch)))
+summary(math_score)
+IQR(math_score)
+sd(math_score)
+
+t.test(math_score~full2$lunch)
+```
+
+
+# Comparing student's lunch situation with their reading scores
+```{r}
+ggplot(data = full) + 
+  geom_boxplot(mapping = aes(x = factor(lunch), y = reading_score, 
+                             fill = factor(lunch)))
+summary(reading_score)
+IQR(reading_score)
+sd(reading_score)
+
+t.test(reading_score~full2$lunch)
+```
+# Comparing student's lunch situation with their writing scores
+```{r}
+ggplot(data = full) + 
+  geom_boxplot(mapping = aes(x = factor(lunch), y = writing_score, 
+                             fill = factor(lunch)))
+summary(writing_score)
+IQR(writing_score)
+sd(writing_score)
+
+t.test(writing_score~full2$lunch)
+```
+
+# Comparing student's lunch situation with their all average exams scores
+```{r}
+ggplot(data = full2) + 
+  geom_boxplot(mapping = aes(x = factor(lunch), y = all_exams, 
+                             fill = factor(lunch)))
+summary(all_exams)
+IQR(all_exams)
+sd(all_exams)
+
+t.test(all_exams~full2$lunch)
+```
+# Comparing student's test preparation course with their all average exams scores
+```{r}
+ggplot(data = full2) + 
+  geom_boxplot(mapping = aes(x = factor(test.preparation.course), y = all_exams, 
+                             fill = factor(test.preparation.course)))
+summary(all_exams)
+IQR(all_exams)
+sd(all_exams)
+
+t.test(all_exams~full2$test.preparation.course)
+```
+```{r}
+ggplot(data = full2) + 
+  geom_boxplot(mapping = aes(x = factor(parental.level.of.education), y = all_exams, 
+                             fill = factor(parental.level.of.education)))
+summary(all_exams)
+IQR(all_exams)
+sd(all_exams)
+
+```
+
+Therefore, we reject the null hypothesis. We know that lunch situations and test preparation courses are correlates with student exams score. We aren't sure if the students' parents education correlate with the exams. 
