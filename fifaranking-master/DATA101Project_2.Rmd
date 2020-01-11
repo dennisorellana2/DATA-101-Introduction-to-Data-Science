@@ -1,0 +1,112 @@
+---
+title: "Fifa Ranking"
+author: "D.O"
+date: "October 17, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(fig.align="center", fig.height=5.5, fig.width=6, collapse=TRUE, comment="", prompt=TRUE)
+options(width=63)
+
+library(dplyr)
+library(ggplot2)
+```
+
+
+dplyr reference: https://dplyr.tidyverse.org/reference/index.html
+
+#Read Data
+Some relevant columns in the dataset: (copied fromhttps://www.kaggle.com/tadhgfitzgerald/fifa-international-soccer-mens-ranking-1993now/version/3)
+
+Fédération Internationale de Football Association (FIFA)
+International Men's Ranking (August 1993 - June 2018) Updated June 7th 2018
+
+  *rank
+  *country_full
+  *country_abrv
+  *total_points
+  *previous_points
+  *rank_change
+  *cur_year_avg
+  *cur_year_avg_weighted
+  *last_year_avg
+  *last_year_avg_weighted
+  *two_year_ago_avg
+  *two_year_ago_weighted
+  *three_year_ago_avg
+  *three_year_ago_weighted
+  *confederation
+  *rank_date
+  
+# Reading Data
+```{r}
+men_fifa_ranking <- read.csv("fifaranking.csv")
+attach(men_fifa_ranking)
+dim(men_fifa_ranking)
+head(men_fifa_ranking)
+str(men_fifa_ranking)
+mfifa<- men_fifa_ranking[, c('rank','country_full','rank_change','previous_points', 'rank_date','confederation')]
+head(mfifa)
+tail(mfifa)
+````
+
+#Exploratory Data Analysis (EDA)
+```{r}
+nrow(mfifa)
+ncol(mfifa)
+country <- select(mfifa, country_full) %>% unique %>% nrow
+table(mfifa$confederation) %>% barplot(col = "blue")
+
+````
+
+#Filter Confederation
+```{r}
+Confed <- mfifa$confederation
+unique(Confed)
+uefa <- filter(mfifa, confederation =='UEFA')
+head(uefa,10)
+afc <- filter(mfifa, confederation =='AFC')
+head(afc,10)
+caf <- filter(mfifa, confederation =='CAF')
+head(caf,10)
+conmebol <- filter(mfifa, confederation =='CONMEBOL')
+head(conmebol,10)
+concacaf<- filter(mfifa, confederation =='CONCACAF')
+head(concacaf,10)
+ofc<- filter(mfifa, confederation =='OFC')
+head(ofc,10)
+````
+#Boxplots
+```{r}
+ggplot(data = mfifa, mapping = aes(x = confederation, y = rank, fill = factor(confederation))) + 
+  geom_boxplot() +  coord_flip()
+````
+
+
+#Scatterplots
+```{r}
+ggplot(data = mfifa) +
+  geom_point(mapping = aes(x = confederation, y = rank, color = confederation) )
+
+````
+
+#Top Ten from each Confederations
+```{r}
+top_uefa <- head(uefa,10)
+top_afc <- head(afc,10)
+top_caf <- head(caf,10)
+top_conmebol <- head(conmebol,10)
+top_concacaf <- head(concacaf,10)
+top_ofc <- head(ofc,10)
+top_conferation <- rbind(top_afc,top_caf,top_concacaf,top_conmebol,top_ofc,top_uefa)
+top_conferation
+
+ggplot(data = top_conferation, mapping = aes(x = confederation, y = rank, fill = factor(confederation))) + 
+  geom_boxplot() +  coord_flip()
+
+ggplot(data = top_conferation) +
+  geom_point(mapping = aes(x = confederation, y = rank, color = confederation) )
+````
+
