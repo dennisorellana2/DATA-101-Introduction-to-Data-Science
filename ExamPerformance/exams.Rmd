@@ -1,0 +1,147 @@
+---
+title: "Exam Performance"
+author: "A.S., D.O."
+date: "December 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+http://roycekimmons.com/tools/generated_data/exams
+This dataset found on kaggle was pulled from this website. It is theoretically "exam scores for students at a public school". However, there is an interesting disclaimer at the end that says "All data sets are fictional and should be used for educational purposes only." That is a :thinking:
+
+
+## Package Load
+
+```{r packages, results = "hide", message = FALSE, warning = FALSE}
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+library(cowplot)
+library(knitr)
+```
+
+## Load Data
+
+```{r}
+full <- read.csv("StudentsPerformance.csv", header = TRUE)
+dim(full)
+head(full)
+str(full)
+```
+
+So it doesn't seem like this dataset is too big. It's a smaller sample, relatively speaking. 1000 isn't a copious amount.
+
+We've got 5 indicators about people, their gender, their race (as described in a group, we don't know which correlate to which), their parents' level of education, their lunch situation (probably pointing to their financial situation), and whether they did a test prep course.
+
+To analyze, we have their writing, reading, and math scores.
+
+## Hypothesis Testing
+Null Hypothesis: There is no correction between total average exams and these co-variates.
+
+Alternative Hypothesis: At least one co-variable Correlates with total average exams.
+
+## Select Data
+```{r}
+math_score <- full$math.score
+ave_math <- mean(math_score)
+reading_score <- full$reading.score
+ave_reading <- mean(reading_score)
+writing_score <- full$writing.score
+ave_writing <- mean(writing_score)
+
+levels(full$gender)
+levels(full$race.ethnicity)
+levels(full$parental.level.of.education)
+levels(full$lunch)
+levels(full$test.preparation.course)
+
+all_exams <- ((math_score+reading_score+writing_score)/3)
+
+full2 <- mutate(full, total_average_score = all_exams)
+head(full2)
+```
+
+## Highest Scores and Lowest scores
+Here is a quick tabular glance at the attributes of the highest and lowest scores for each of the three tests as well as the average score.
+```{r}
+labels <- as.character(c("Lowest Math Score", "Highest Math Score", "Lowest Reading Score", "Highest Reading Score", "Lowest Writing Score", "Highest Writing Score", "Lowest Average Score", "Highest Average Score"))
+indexes <- c(which.min(math_score), which.max(math_score), which.min(reading_score), which.max(reading_score), which.min(writing_score), which.max(writing_score), which.min(all_exams), which.max(all_exams))
+actualscores <- c(min(math_score), max(math_score), min(reading_score), max(reading_score), min(writing_score), max(writing_score), min(all_exams), max(all_exams))
+
+maxmin <- data.frame(Score = actualscores, Lunch_status = full$lunch[indexes], Parents_Education = full$parental.level.of.education[indexes], Test_Prep = full$test.preparation.course[indexes], Gender = full$gender[indexes], row.names = labels)
+
+kable(maxmin)
+```
+
+As you can see, there are some stark differences.
+
+## Graph Overall Distributions of 5 Attributes
+Just to get an overall feel for the number of students scoring what, we'll make some histograms. R divides the scores into bins of size 10.
+
+```{r}
+table(full$gender) %>% barplot(col = "red", main = "Distribution of Gender", ylab = "# of Students")
+
+par(mfrow = c(2, 2))
+
+hist(math_score, col = "green", main = "Distribution of Math Scores", xlab = "Math Score", ylab = "# of Students")
+
+hist(reading_score, col = "orange", main = "Distribution of Reading Scores", xlab = "Reading Score", ylab = "# of Students")
+
+hist(writing_score, col = "blue", main = "Distribution of Writing Scores", xlab = "Writing Score", ylab = "# of Students")
+
+hist(all_exams, col = "purple", main = "Distribution of Average Scores", xlab = "Average Score", ylab = "# of Students")
+```
+
+## Attributes vs. Average Test Scores
+
+### Lunch Situation
+The lunch situation was likely included in the data as an indication of the student's family's financial situation, since usually lunch programs are awarded based on financial circumstances. There are two groups here, students receiving free/reduced lunches, and students on standard (probably no) lunch plan.
+
+### Test Preparation Course
+Whether a student has taken a test preparation course may influence their score, probably for the better compared to someone who didn't take one.
+
+### Parents' Education
+Not only is the parents' education indicative of perhaps how well-off the family is socioeconomically, but it also possibly influences what kind of learning environment the student grew up in at home and whether they were taught a lot or not. There is also the debateable element of whether there is any genetic influence.
+
+```{r, fig.width=24, fig.height = 6}
+summary(all_exams)
+IQR(all_exams)
+sd(all_exams)
+
+full2$parental.level.of.education <- factor(full2$parental.level.of.education, levels(full2$parental.level.of.education)[c(6, 3, 5, 1, 2, 4)])
+full2$test.preparation.course <- factor(full2$test.preparation.course, levels(full2$test.preparation.course)[c(2, 1)])
+
+p1 <- ggplot(data = full2) +
+  geom_boxplot(mapping = aes(x = factor(lunch), y = all_exams, fill = factor(lunch))) +
+  theme(legend.title=element_blank()) + 
+  ggtitle("Lunch vs Avg Score") + 
+  xlab("Lunch Program") +
+  ylab("Total Average Score")
+p2 <- ggplot(data = full2) +
+  geom_boxplot(mapping = aes(x = factor(test.preparation.course), y = all_exams, fill = factor(test.preparation.course))) +
+  theme(legend.title=element_blank()) + 
+  ggtitle("Test Prep vs Avg Score") + 
+  xlab("Test Prep") +
+  ylab("Total Average Score")
+p3<- ggplot(data = full2) +
+  geom_boxplot(mapping = aes(x = factor(parental.level.of.education), y = all_exams, fill = factor(parental.level.of.education))) +
+  theme(legend.title=element_blank()) + 
+  ggtitle("Parents' Education vs Avg Score") + 
+  xlab("Parents' Education") +
+  ylab("Total Average Score")
+
+plot_grid(p1, p2, p3, ncol = 3, align = 'h', rel_widths = c(1, 1, 2))
+```
+
+Let's also do t-tests for the two variables that have two different options.
+
+```{r}
+t.test(all_exams~full2$lunch)
+t.test(all_exams~full2$test.preparation.course)
+```
+
+## Conclusion
+Therefore, we reject the null hypothesis. We know that lunch situations and test preparation courses are correlates with student exams score. We aren't sure if the students' parents education correlate with the exams.
