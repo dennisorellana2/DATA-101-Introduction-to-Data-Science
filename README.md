@@ -6,7 +6,7 @@ These were some of my first projects in R studio for a data science class.
 ### Avocados DATA 101 Project 1
 DATA 101 Project 1 will use dplyr to do data cleaning and presentation of data from a .csv file.
 
-### Exam Perforance DATA 101 Project 3
+### Exam Perforance DATA 101 Project 3 (Final)
 
 DATA 101 Project 3 was focused on using statistical inference techniques to analyze data.
 
