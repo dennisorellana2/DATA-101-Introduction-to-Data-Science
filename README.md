@@ -1,7 +1,7 @@
 # HelloWorld.Rmd
 ## Hello Data class!!
 
-These were some of my first projects in R studio for a data science class.
+These were some of my first projects in R studio for a data science class taken in a community college. 
 
 ### Avocados DATA 101 Project 1
 DATA 101 Group Project 1 will use dplyr to do data cleaning and presentation of data from a .csv file.
