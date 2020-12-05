@@ -16,16 +16,20 @@ Does student parents background education impact their test scores?
 R Version: 3.5 <img align="left" alt="R" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/r/r.png" />
 
 R Studio Version: 3.5 <img align="left" alt="RStudio" width="26px" src="https://avatars0.githubusercontent.com/u/513560?s=200&v=4" />
-Packages: tensorflow, matplotlib
+Packages: dplyr and ggplot2
 
 
-Updated in Colab:
-<img align="left" alt="CoLab" width="26px" src="https://avatars1.githubusercontent.com/u/38081706?s=60&u=963d11e5a1e77618d6baab30d32d40cb17e4064d&v=4" />
+Updated in Jupyter Notebook: https://github.com/dennisorellana2/DATA-101-Introduction-to-Data-Science/blob/master/final/Exam_Performance.ipynb
+<img align="left" alt="jupyter-notebook" width="26px" src="https://avatars1.githubusercontent.com/u/7388996?s=200&v=4" />
 
 ## Model Building 
 
-## Model Performance
-*
-## Overall 
+![](math vs lunch factors.PNG)
 
+1[](all exams histogram.PNG)
+
+![](all exams vs level of education.PNG)
+
+## Overall 
+We reject the null hypothesis. We know that lunch situations and test preparation courses are correlates with student exams score. We aren't sure if the students' parents education correlate with the exams.
 
