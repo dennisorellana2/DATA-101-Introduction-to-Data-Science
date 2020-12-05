@@ -24,11 +24,13 @@ Updated in Jupyter Notebook: https://github.com/dennisorellana2/DATA-101-Introdu
 
 ## Model Building 
 
-![](math vs lunch factors.PNG)
+![](math%20vs%20lunch%20factors.PNG)
 
-1[](all exams histogram.PNG)
 
-![](all exams vs level of education.PNG)
+1[](all%20exams%20histogram.PNG)
+
+
+![](all%20exams%20vs%20level%20of%20education.PNG)
 
 ## Overall 
 We reject the null hypothesis. We know that lunch situations and test preparation courses are correlates with student exams score. We aren't sure if the students' parents education correlate with the exams.
