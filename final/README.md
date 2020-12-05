@@ -19,8 +19,9 @@ R Studio Version: 3.5 <img align="left" alt="RStudio" width="26px" src="https://
 Packages: dplyr and ggplot2
 
 
-Updated in Jupyter Notebook: https://github.com/dennisorellana2/DATA-101-Introduction-to-Data-Science/blob/master/final/Exam_Performance.ipynb
 <img align="left" alt="jupyter-notebook" width="26px" src="https://avatars1.githubusercontent.com/u/7388996?s=200&v=4" />
+Updated in Jupyter Notebook: https://github.com/dennisorellana2/DATA-101-Introduction-to-Data-Science/blob/master/final/Exam_Performance.ipynb
+
 
 ## Model Building 
 
