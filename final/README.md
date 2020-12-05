@@ -27,9 +27,6 @@ Updated in Jupyter Notebook: https://github.com/dennisorellana2/DATA-101-Introdu
 ![](math%20vs%20lunch%20factors.PNG)
 
 
-1[](all%20exams%20histogram.PNG)
-
-
 ![](all%20exams%20vs%20level%20of%20education.PNG)
 
 ## Overall 
