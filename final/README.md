@@ -1,4 +1,4 @@
-# ExamPerformance
+# Exam Performance
 DATA101 Project 3
 
 This project is focused on using statistical inference techniques to analyze data.
